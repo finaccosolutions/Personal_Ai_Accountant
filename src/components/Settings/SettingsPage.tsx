@@ -11,6 +11,8 @@ export const SettingsPage = () => {
   const [geminiApiKey, setGeminiApiKey] = useState('');
   const [useSystemAi, setUseSystemAi] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -30,10 +32,13 @@ export const SettingsPage = () => {
       if (data) {
         setProfile(data);
         setGeminiApiKey(data.gemini_api_key || '');
-        setUseSystemAi(data.use_system_ai);
+        setUseSystemAi(data.use_system_ai ?? true);
+      } else {
+        setError('Profile not found. Please contact support.');
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
+      setError('Failed to load profile');
     } finally {
       setLoading(false);
     }
@@ -41,6 +46,8 @@ export const SettingsPage = () => {
 
   const handleSaveApiKey = async () => {
     setSaving(true);
+    setError('');
+    setSuccess('');
     try {
       const { error } = await supabase
         .from('profiles')
@@ -51,10 +58,15 @@ export const SettingsPage = () => {
         .eq('id', user!.id);
 
       if (error) throw error;
-      setShowApiKeyModal(false);
+      setSuccess('API key saved successfully!');
+      setTimeout(() => {
+        setShowApiKeyModal(false);
+        setSuccess('');
+      }, 1500);
       fetchProfile();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving API key:', error);
+      setError(error.message || 'Failed to save API key');
     } finally {
       setSaving(false);
     }
@@ -196,6 +208,18 @@ export const SettingsPage = () => {
                   <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                 </label>
               </div>
+
+              {error && (
+                <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="bg-green-50 text-green-600 px-4 py-3 rounded-xl text-sm">
+                  {success}
+                </div>
+              )}
 
               <div className="flex gap-3 pt-2">
                 <button

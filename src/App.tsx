@@ -6,6 +6,7 @@ import { Dashboard } from './components/Dashboard/Dashboard';
 import { BanksPage } from './components/Banks/BanksPage';
 import { CashPage } from './components/Cash/CashPage';
 import { InsightsPage } from './components/Insights/InsightsPage';
+import { RemindersPage } from './components/Reminders/RemindersPage';
 import { SettingsPage } from './components/Settings/SettingsPage';
 
 const AppContent = () => {
@@ -34,6 +35,8 @@ const AppContent = () => {
         return <CashPage />;
       case 'insights':
         return <InsightsPage />;
+      case 'reminders':
+        return <RemindersPage />;
       case 'settings':
         return <SettingsPage />;
       default:
